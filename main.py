@@ -28,8 +28,6 @@ def check_city():
             used_cities.append(computer_city)
             last_computer_letter = get_last_letter(computer_city)
             response = f"Мій варіант - це місто {computer_city}"
-
-    # response = f"Python гра: Ви ввели місто {city}\n"
     game_log.config(state=tk.NORMAL)
     game_log.insert(tk.END, f"Ви: {city}\n")
     game_log.insert(tk.END, f"Гра: {response}\n")
@@ -52,9 +50,23 @@ def get_city_by_letter(letter):
             if available_cities:
                 return choice(available_cities)
 
-cities = ["Київ", "Вінниця", "Ялта", "Алчевськ", "Кривий Ріг", "Глухів", "Вишгород", "Дніпро", "Обухів", "Васильків", "Вишневе", "Енергодар", "Радомишль", "Луцьк", "Кропивницький"]
-used_cities = []
+def surrender():
+    game_log.config(state=tk.NORMAL)
+    game_log.insert(tk.END, f"Здаюся! На жаль не знаю більше міст на літеру {last_computer_letter}\n")
+    game_log.yview(tk.END)
+    game_log.config(state=tk.DISABLED)
+    notification.config(text="Цього разу ти програв!\nПідготуйся та візьми реванш наступного разу")
+    entry.delete(0, tk.END)
 
+def load_cities_from_file(filename):
+    cities = []
+    with open(filename, "r", encoding="utf-8") as fd:
+        for line in fd:
+            cities.append(line.strip())
+        return cities
+
+cities = load_cities_from_file('cities.txt')
+used_cities = []
 root = tk.Tk()
 root.title('Гра в міста')
 root.geometry('800x400')
@@ -68,11 +80,12 @@ label.pack(padx=10, pady=10)
 entry = tk.Entry(left_frame, width=35)
 entry.pack(padx=10, pady=10)
 
-button = tk.Button(left_frame, text='Відправити', command=check_city)
-button.pack(padx=10, pady=10)
-
-button_end = tk.Button(left_frame, text='Python win', command=check_city)
-button_end.pack(padx=10, pady=10)
+button_frame = tk.Frame(left_frame)
+button_frame.pack(pady=10)
+button = tk.Button(button_frame, text='Відправити', command=check_city)
+button.pack(padx=10, side=tk.LEFT)
+button_end = tk.Button(button_frame, text='Здатися', command=surrender)
+button_end.pack(padx=10, side=tk.LEFT)
 
 notification = tk.Label(left_frame, text='')
 notification.pack(padx=10, pady=10)
